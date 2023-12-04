@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: licence-service
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  health:
+    diskspace:
+      enabled: true

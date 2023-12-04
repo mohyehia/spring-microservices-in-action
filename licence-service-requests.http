@@ -1,0 +1,29 @@
+### get license by id
+GET http://localhost:8080/api/v1/organizations/main/licences/1234
+
+
+### add new license
+POST http://localhost:8080/api/v1/organizations/main/licences
+Content-Type: application/json
+
+{
+  "organizationId": "some-dummy-org",
+  "description": "new license",
+  "productName": "license",
+  "licenceType": "part"
+}
+
+### update license
+PUT http://localhost:8080/api/v1/organizations/main/licences
+Content-Type: application/json
+
+{
+  "organizationId": "some-dummy-org",
+  "description": "new license",
+  "productName": "license",
+  "licenceType": "part"
+}
+
+
+### delete license
+DELETE http://localhost:8080/api/v1/organizations/main/licences/1234
