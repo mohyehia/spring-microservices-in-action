@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  consul:
+    container_name: consul-ctr
+    image: hashicorp/consul:latest
+    restart: unless-stopped
+    ports:
+      - '8500:8500'
+    volumes:
+      - ./docker/volumes/consul:/consul/data
+
+  mongo-db:
+    container_name: mongo-ctr
+    image: mongo:latest
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    expose:
+      - '27017'
+    volumes:
+      - ./docker/volumes/mongo:/data/db

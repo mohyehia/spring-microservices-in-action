@@ -1,6 +1,16 @@
 spring:
   application:
-    name: licence-service
+    name: license-service
+  config:
+    import: optional:consul:${spring.cloud.consul.host}:${spring.cloud.consul.port}
+  cloud:
+    consul:
+      host: consul
+      port: 8500
+      config:
+        enabled: true
+        format: yaml
+
 management:
   endpoint:
     health:

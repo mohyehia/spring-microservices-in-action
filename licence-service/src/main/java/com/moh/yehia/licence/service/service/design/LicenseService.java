@@ -1,13 +1,18 @@
 package com.moh.yehia.licence.service.service.design;
 
 import com.moh.yehia.licence.service.model.License;
+import com.moh.yehia.licence.service.model.LicenseDTO;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public interface LicenseService {
-    License findOne(String organizationId, long licenceId);
+    Mono<License> findOne(String organizationId, String licenceId);
 
-    License save(String organizationId, License license);
+    Mono<License> save(String organizationId, LicenseDTO licenseDto);
 
-    License update(String organizationId, License license);
+    Mono<License> update(String organizationId, String licenseId, LicenseDTO licenseDTO);
 
-    void delete(String organizationId, long licenceId);
+    Mono<Void> delete(String organizationId, String licenceId);
+
+    Flux<License> findByOrganizationId(String organizationId);
 }

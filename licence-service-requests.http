@@ -1,29 +1,31 @@
+### find all by organization
+GET http://localhost:8080/api/v1/organizations/primary/licences
+
 ### get license by id
-GET http://localhost:8080/api/v1/organizations/main/licences/1234
+GET http://localhost:8080/api/v1/organizations/primary/licences/6571d0d1a5cf9401e16325e1
 
 
 ### add new license
-POST http://localhost:8080/api/v1/organizations/main/licences
+POST http://localhost:8080/api/v1/organizations/primary/licences
 Content-Type: application/json
 
 {
-  "organizationId": "some-dummy-org",
-  "description": "new license",
-  "productName": "license",
+  "organizationId": "primary",
+  "description": "some other description",
+  "productName": "dummy-license",
   "licenceType": "part"
 }
 
 ### update license
-PUT http://localhost:8080/api/v1/organizations/main/licences
+PUT http://localhost:8080/api/v1/organizations/primary/licences/6571d0d1a5cf9401e16325e1
 Content-Type: application/json
 
 {
-  "organizationId": "some-dummy-org",
-  "description": "new license",
-  "productName": "license",
+  "description": "some new license description",
+  "productName": "random product name",
   "licenceType": "part"
 }
 
 
 ### delete license
-DELETE http://localhost:8080/api/v1/organizations/main/licences/1234
+DELETE http://localhost:8080/api/v1/organizations/primary/licences/6571d0d1a5cf9401e16325e1
