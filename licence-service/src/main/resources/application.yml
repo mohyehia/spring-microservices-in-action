@@ -10,6 +10,17 @@ spring:
       config:
         enabled: true
         format: yaml
+      discovery:
+        enabled: true
+        register: true
+        health-check-interval: 15s
+        instance-id: ${spring.application.name}:${random.int}
+        health-check-path: /actuator/health
+        metadata:
+          department: ${SERVICE_DEPARTMENT:Information Technology}
+          team: ${SERVICE_TEAM:Software Development}
+          env: ${SERVICE_ENVIRONMENT:dev}
+          region: ${SERVICE_REGION:us-east1}
 
 management:
   endpoint:

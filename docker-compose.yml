@@ -10,6 +10,8 @@ services:
       - ./docker/volumes/consul/data:/consul/data
       - ./docker/volumes/consul/config/consul-config.json:/consul/config/config.json
     command: agent -server -bind 0.0.0.0 -client 0.0.0.0 -bootstrap-expect 1 -config-file=/consul/config/config.json
+    extra_hosts:
+      - host.docker.internal:host-gateway
 
   mongo-db:
     container_name: mongo-ctr
