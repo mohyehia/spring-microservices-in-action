@@ -1,0 +1,3 @@
+
+### get organization by slug
+GET http://localhost:8081/api/v1/organizations/sample-organization
