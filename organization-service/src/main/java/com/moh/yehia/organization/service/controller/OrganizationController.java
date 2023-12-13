@@ -1,22 +1,32 @@
 package com.moh.yehia.organization.service.controller;
 
+import com.moh.yehia.organization.service.mapper.OrganizationMapper;
 import com.moh.yehia.organization.service.model.OrganizationModel;
+import com.moh.yehia.organization.service.model.OrganizationRequest;
+import com.moh.yehia.organization.service.service.design.OrganizationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
-
-import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/v1/organizations")
 @RequiredArgsConstructor
 public class OrganizationController {
+    private final OrganizationService organizationService;
+    private final OrganizationMapper organizationMapper;
+
+
     @GetMapping("/{slug}")
     public Mono<OrganizationModel> findBySlug(@PathVariable("slug") String slug) {
-        return Mono
-                .just(new OrganizationModel(123L, "Our Organization", slug, LocalDateTime.now()));
+        return organizationService.findBySlug(slug)
+                .map(organizationMapper::mapToOrganizationModel)
+                .switchIfEmpty(Mono.empty());
+    }
+
+    @PostMapping
+    public Mono<OrganizationModel> save(@RequestBody OrganizationRequest organizationRequest) {
+        return organizationService.save(organizationRequest)
+                .map(organizationMapper::mapToOrganizationModel)
+                .switchIfEmpty(Mono.empty());
     }
 }

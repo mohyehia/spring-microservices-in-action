@@ -1,3 +1,13 @@
 
 ### get organization by slug
-GET http://localhost:8081/api/v1/organizations/sample-organization
+GET http://localhost:8081/api/v1/organizations/primary-org
+
+
+### save new organization
+POST http://localhost:8081/api/v1/organizations
+Content-Type: application/json
+
+{
+  "name": "Secondary Organization",
+  "slug": "sec-org"
+}

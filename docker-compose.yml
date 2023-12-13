@@ -23,3 +23,16 @@ services:
       - '27017'
     volumes:
       - ./docker/volumes/mongo:/data/db
+
+  postgres-db:
+    container_name: postgres-ctr
+    image: postgres:16.0
+    restart: unless-stopped
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./docker/volumes/postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: organization-user
+      POSTGRES_PASSWORD: P@ssw0rd
+      POSTGRES_DB: organization-db
