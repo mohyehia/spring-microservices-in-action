@@ -19,9 +19,7 @@ public class FlywayConfig {
                         r2dbcProperties.getUsername(),
                         r2dbcProperties.getPassword()
                 )
-                .locations(
-                        flywayProperties.getLocations().toArray(String[]::new)
-                ).baselineOnMigrate(true)
+                .baselineOnMigrate(true)
                 .load();
     }
 }

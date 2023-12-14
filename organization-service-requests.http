@@ -8,6 +8,6 @@ POST http://localhost:8081/api/v1/organizations
 Content-Type: application/json
 
 {
-  "name": "Secondary Organization",
-  "slug": "sec-org"
+  "name": "Primary Organization",
+  "slug": "primary-org"
 }

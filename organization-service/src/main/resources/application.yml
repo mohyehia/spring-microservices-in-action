@@ -1,11 +1,7 @@
 spring:
   application:
     name: organization-service
-  flyway:
-    sql-migration-prefix: V
-    sql-migration-separator: __
-    sql-migration-suffixes: .sql
-    url: jdbc:postgresql://postgres-db:5432/organization-db
+
   config:
     import: optional:consul:${spring.cloud.consul.host}:${spring.cloud.consul.port}
   cloud:
@@ -31,6 +27,12 @@ spring:
     url: r2dbc:postgresql://postgres-db:5432/organization-db
     username: organization-user
     password: P@ssw0rd
+
+  flyway:
+    sql-migration-prefix: V
+    sql-migration-separator: __
+    sql-migration-suffixes: .sql
+    url: jdbc:postgresql://postgres-db:5432/organization-db
 
 server:
   port: 8081
