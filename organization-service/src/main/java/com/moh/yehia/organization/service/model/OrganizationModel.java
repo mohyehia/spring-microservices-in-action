@@ -13,5 +13,7 @@ public class OrganizationModel {
     private long id;
     private String name;
     private String slug;
+    private String contactEmail;
+    private String contactPhone;
     private LocalDateTime createdAt;
 }

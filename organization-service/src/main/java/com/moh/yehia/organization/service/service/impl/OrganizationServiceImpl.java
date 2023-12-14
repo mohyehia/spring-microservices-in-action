@@ -26,6 +26,8 @@ public class OrganizationServiceImpl implements OrganizationService {
         return organizationRepository.save(Organization.builder()
                 .name(organizationRequest.name())
                 .slug(organizationRequest.slug())
+                .contactEmail(organizationRequest.email())
+                .contactPhone(organizationRequest.phone())
                 .createdAt(LocalDateTime.now())
                 .build());
     }

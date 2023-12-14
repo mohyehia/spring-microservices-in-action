@@ -29,7 +29,7 @@ public class LicenseController {
     public Flux<LicenseModel> findAll(@PathVariable("organizationId") String organizationId) {
         return organizationService.findOne(organizationId)
                 .flatMapMany(organizationDTO -> licenseService.findByOrganizationId(organizationDTO.slug()).map(license -> {
-                    LicenseModel licenseModel = licenseMapper.mapToLicenceModel(license);
+                    LicenseModel licenseModel = licenseMapper.mapToLicenceModel(license, organizationDTO);
                     licenseModel.add(
                             WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
                                     .findOne(organizationId, licenseModel.getId())).withRel(LinkRelation.of(AppConstants.WEB_LINK_FIND_LICENSE)),
@@ -49,7 +49,7 @@ public class LicenseController {
                                       @PathVariable("licenseId") String licenceId) {
         return organizationService.findOne(organizationId)
                 .flatMap(organizationDTO -> licenseService.findOne(organizationDTO.slug(), licenceId).map(license -> {
-                    LicenseModel licenseModel = licenseMapper.mapToLicenceModel(license);
+                    LicenseModel licenseModel = licenseMapper.mapToLicenceModel(license, organizationDTO);
                     licenseModel.add(
                             WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
                                     .findOne(organizationId, licenceId)).withSelfRel(),
@@ -70,7 +70,7 @@ public class LicenseController {
         return organizationService.findOne(organizationId)
                 .flatMap(organizationDTO -> licenseService.save(organizationDTO.slug(), licenseDTO).map(license -> {
                     log.info("organizationDTO =>{}", organizationDTO.toString());
-                    LicenseModel licenseModel = licenseMapper.mapToLicenceModel(license);
+                    LicenseModel licenseModel = licenseMapper.mapToLicenceModel(license, organizationDTO);
                     licenseModel.add(
                             WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
                                     .save(organizationId, populateLicenseDTO(license))).withSelfRel(),

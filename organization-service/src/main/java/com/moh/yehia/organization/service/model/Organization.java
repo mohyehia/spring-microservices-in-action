@@ -28,4 +28,10 @@ public class Organization {
 
     @Column("created_at")
     private LocalDateTime createdAt;
+
+    @Column("contact_email")
+    private String contactEmail;
+
+    @Column("contact_phone")
+    private String contactPhone;
 }

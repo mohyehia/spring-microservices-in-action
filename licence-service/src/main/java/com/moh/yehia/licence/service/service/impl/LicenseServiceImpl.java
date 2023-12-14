@@ -25,7 +25,7 @@ public class LicenseServiceImpl implements LicenseService {
     @Override
     public Mono<License> save(String organizationId, LicenseDTO licenseDto) {
         License license = License.builder()
-                .organizationId(licenseDto.getOrganizationId())
+                .organizationId(organizationId)
                 .productName(licenseDto.getProductName())
                 .licenceType(licenseDto.getLicenceType())
                 .description(licenseDto.getDescription())

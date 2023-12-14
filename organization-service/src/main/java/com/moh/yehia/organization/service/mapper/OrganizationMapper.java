@@ -7,6 +7,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrganizationMapper {
     public OrganizationModel mapToOrganizationModel(Organization organization) {
-        return new OrganizationModel(organization.getId(), organization.getName(), organization.getSlug(), organization.getCreatedAt());
+        return new OrganizationModel(organization.getId(),
+                organization.getName(),
+                organization.getSlug(),
+                organization.getContactEmail(),
+                organization.getContactPhone(),
+                organization.getCreatedAt());
     }
 }
