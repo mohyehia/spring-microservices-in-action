@@ -1,5 +1,6 @@
 package com.moh.yehia.organization.service.controller;
 
+import com.moh.yehia.organization.service.exception.NotFoundException;
 import com.moh.yehia.organization.service.mapper.OrganizationMapper;
 import com.moh.yehia.organization.service.model.OrganizationModel;
 import com.moh.yehia.organization.service.model.OrganizationRequest;
@@ -20,7 +21,7 @@ public class OrganizationController {
     public Mono<OrganizationModel> findBySlug(@PathVariable("slug") String slug) {
         return organizationService.findBySlug(slug)
                 .map(organizationMapper::mapToOrganizationModel)
-                .switchIfEmpty(Mono.empty());
+                .switchIfEmpty(Mono.error(new NotFoundException("Organization not found with slug " + slug)));
     }
 
     @PostMapping

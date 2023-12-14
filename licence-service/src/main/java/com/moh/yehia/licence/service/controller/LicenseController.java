@@ -6,6 +6,7 @@ import com.moh.yehia.licence.service.model.License;
 import com.moh.yehia.licence.service.model.LicenseDTO;
 import com.moh.yehia.licence.service.model.LicenseModel;
 import com.moh.yehia.licence.service.service.design.LicenseService;
+import com.moh.yehia.licence.service.service.design.OrganizationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.hateoas.LinkRelation;
@@ -22,30 +23,32 @@ import reactor.core.publisher.Mono;
 public class LicenseController {
     private final LicenseService licenseService;
     private final LicenseMapper licenseMapper;
-
+    private final OrganizationService organizationService;
 
     @GetMapping
     public Flux<LicenseModel> findAll(@PathVariable("organizationId") String organizationId) {
-        return licenseService.findByOrganizationId(organizationId).map(license -> {
-            LicenseModel licenseModel = licenseMapper.mapToLicenceModel(license);
-            licenseModel.add(
-                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
-                            .findOne(organizationId, licenseModel.getId())).withRel(LinkRelation.of(AppConstants.WEB_LINK_FIND_LICENSE)),
-                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
-                            .save(organizationId, populateLicenseDTO(license))).withRel(LinkRelation.of(AppConstants.WEB_LINK_SAVE_LICENSE)),
-                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
-                            .update(organizationId, license.getId(), populateLicenseDTO(license))).withRel(LinkRelation.of(AppConstants.WEB_LINK_UPDATE_LICENSE)),
-                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
-                            .delete(organizationId, license.getId())).withRel(LinkRelation.of(AppConstants.WEB_LINK_DELETE_LICENSE)));
-            return licenseModel;
-        });
+        return organizationService.findOne(organizationId)
+                .flatMapMany(organizationDTO -> licenseService.findByOrganizationId(organizationDTO.slug()).map(license -> {
+                    LicenseModel licenseModel = licenseMapper.mapToLicenceModel(license);
+                    licenseModel.add(
+                            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
+                                    .findOne(organizationId, licenseModel.getId())).withRel(LinkRelation.of(AppConstants.WEB_LINK_FIND_LICENSE)),
+                            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
+                                    .save(organizationId, populateLicenseDTO(license))).withRel(LinkRelation.of(AppConstants.WEB_LINK_SAVE_LICENSE)),
+                            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
+                                    .update(organizationId, license.getId(), populateLicenseDTO(license))).withRel(LinkRelation.of(AppConstants.WEB_LINK_UPDATE_LICENSE)),
+                            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
+                                    .delete(organizationId, license.getId())).withRel(LinkRelation.of(AppConstants.WEB_LINK_DELETE_LICENSE)));
+                    return licenseModel;
+                })).switchIfEmpty(Flux.empty());
     }
 
     @GetMapping("/{licenseId}")
     @ResponseStatus(HttpStatus.OK)
     public Mono<LicenseModel> findOne(@PathVariable("organizationId") String organizationId,
                                       @PathVariable("licenseId") String licenceId) {
-        return licenseService.findOne(organizationId, licenceId).map(license -> {
+        return organizationService.findOne(organizationId)
+                .flatMap(organizationDTO -> licenseService.findOne(organizationDTO.slug(), licenceId).map(license -> {
                     LicenseModel licenseModel = licenseMapper.mapToLicenceModel(license);
                     licenseModel.add(
                             WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
@@ -57,28 +60,29 @@ public class LicenseController {
                             WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
                                     .delete(organizationId, license.getId())).withRel(LinkRelation.of(AppConstants.WEB_LINK_DELETE_LICENSE)));
                     return licenseModel;
-                })
-                .switchIfEmpty(Mono.empty());
+                })).switchIfEmpty(Mono.empty());
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<LicenseModel> save(@PathVariable("organizationId") String organizationId,
                                    @RequestBody LicenseDTO licenseDTO) {
-        return licenseService.save(organizationId, licenseDTO).map(license -> {
-            LicenseModel licenseModel = licenseMapper.mapToLicenceModel(license);
-            licenseModel.add(
-                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
-                            .save(organizationId, populateLicenseDTO(license))).withSelfRel(),
-                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
-                            .findOne(organizationId, license.getId())).withRel(LinkRelation.of(AppConstants.WEB_LINK_FIND_LICENSE)),
-                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
-                            .update(organizationId, license.getId(), populateLicenseDTO(license))).withRel(LinkRelation.of(AppConstants.WEB_LINK_UPDATE_LICENSE)),
-                    WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
-                            .delete(organizationId, license.getId())).withRel(LinkRelation.of(AppConstants.WEB_LINK_DELETE_LICENSE))
-            );
-            return licenseModel;
-        }).switchIfEmpty(Mono.empty());
+        return organizationService.findOne(organizationId)
+                .flatMap(organizationDTO -> licenseService.save(organizationDTO.slug(), licenseDTO).map(license -> {
+                    log.info("organizationDTO =>{}", organizationDTO.toString());
+                    LicenseModel licenseModel = licenseMapper.mapToLicenceModel(license);
+                    licenseModel.add(
+                            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
+                                    .save(organizationId, populateLicenseDTO(license))).withSelfRel(),
+                            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
+                                    .findOne(organizationId, license.getId())).withRel(LinkRelation.of(AppConstants.WEB_LINK_FIND_LICENSE)),
+                            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
+                                    .update(organizationId, license.getId(), populateLicenseDTO(license))).withRel(LinkRelation.of(AppConstants.WEB_LINK_UPDATE_LICENSE)),
+                            WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)
+                                    .delete(organizationId, license.getId())).withRel(LinkRelation.of(AppConstants.WEB_LINK_DELETE_LICENSE))
+                    );
+                    return licenseModel;
+                }).switchIfEmpty(Mono.empty()));
     }
 
     @PutMapping("/{licenseId}")
