@@ -8,4 +8,6 @@ public final class AppConstants {
     public static final String WEB_LINK_FIND_LICENSE = "findLicense";
     public static final String WEB_LINK_UPDATE_LICENSE = "updateLicense";
     public static final String WEB_LINK_DELETE_LICENSE = "deleteLicense";
+    public static final String LICENSE_NOT_AVAILABLE = "License info not available now!";
+    public static final String ORGANIZATION_NOT_AVAILABLE = "Organization info not available now!";
 }

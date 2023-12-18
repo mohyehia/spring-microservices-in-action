@@ -28,7 +28,7 @@ public class LicenseController {
     @GetMapping
     public Flux<LicenseModel> findAll(@PathVariable("organizationId") String organizationId) {
         return organizationService.findOne(organizationId)
-                .flatMapMany(organizationDTO -> licenseService.findByOrganizationId(organizationDTO.slug()).map(license -> {
+                .flatMapMany(organizationDTO -> licenseService.findByOrganizationId(organizationId).map(license -> {
                     LicenseModel licenseModel = licenseMapper.mapToLicenceModel(license, organizationDTO);
                     licenseModel.add(
                             WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(LicenseController.class)

@@ -1,5 +1,6 @@
 package com.moh.yehia.licence.service.config;
 
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
@@ -13,15 +14,16 @@ public class MessageSourceConfig {
     @Bean
     public LocaleResolver localeResolver() {
         SessionLocaleResolver sessionLocaleResolver = new SessionLocaleResolver();
-        sessionLocaleResolver.setDefaultLocale(Locale.US);
+        sessionLocaleResolver.setDefaultLocale(Locale.ENGLISH);
         return sessionLocaleResolver;
     }
 
     @Bean
-    public ResourceBundleMessageSource messageSource() {
+    public MessageSource messageSource() {
         ResourceBundleMessageSource resourceBundleMessageSource = new ResourceBundleMessageSource();
-        resourceBundleMessageSource.setBasenames("messages");
+        resourceBundleMessageSource.setBasenames("classpath:/messages");
         resourceBundleMessageSource.setUseCodeAsDefaultMessage(true);
+        resourceBundleMessageSource.setDefaultEncoding("UTF-8");
         return resourceBundleMessageSource;
     }
 }
