@@ -37,3 +37,11 @@ resilience4j:
           seconds: 8
         permitted-number-of-calls-in-half-open-state: 3
         sliding-window-type: count_based
+  retry:
+    instances:
+      organization-service:
+        max-attempts: 3
+        wait-duration:
+          seconds: 2
+        retry-exceptions:
+          - java.util.concurrent.TimeoutException

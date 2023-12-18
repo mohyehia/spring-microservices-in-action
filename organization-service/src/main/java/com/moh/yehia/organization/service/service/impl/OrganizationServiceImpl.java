@@ -5,6 +5,7 @@ import com.moh.yehia.organization.service.model.OrganizationRequest;
 import com.moh.yehia.organization.service.repository.OrganizationRepository;
 import com.moh.yehia.organization.service.service.design.OrganizationService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -18,6 +19,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @CircuitBreaker(name = "organization-service")
+    @Retry(name = "organization-service")
     public Mono<Organization> findBySlug(String slug) {
         return organizationRepository.findBySlug(slug)
                 .switchIfEmpty(Mono.empty());

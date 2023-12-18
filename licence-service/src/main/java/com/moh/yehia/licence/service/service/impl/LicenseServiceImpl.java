@@ -6,6 +6,7 @@ import com.moh.yehia.licence.service.model.LicenseDTO;
 import com.moh.yehia.licence.service.repository.LicenseRepository;
 import com.moh.yehia.licence.service.service.design.LicenseService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.MessageSource;
@@ -22,6 +23,7 @@ public class LicenseServiceImpl implements LicenseService {
 
     @Override
     @CircuitBreaker(name = "license-service", fallbackMethod = "fallbackFindOne")
+    @Retry(name = "license-service", fallbackMethod = "fallbackFindOne")
     public Mono<License> findOne(String organizationId, String licenceId) {
         return licenseRepository.findByIdAndOrganizationId(licenceId, organizationId)
                 .switchIfEmpty(Mono.empty());
@@ -41,6 +43,7 @@ public class LicenseServiceImpl implements LicenseService {
 
     @Override
     @CircuitBreaker(name = "license-service")
+    @Retry(name = "license-service")
     public Mono<License> update(String organizationId, String licenseId, LicenseDTO licenseDTO) {
         return licenseRepository.findByIdAndOrganizationId(licenseId, organizationId)
                 .flatMap(license -> {
@@ -53,20 +56,34 @@ public class LicenseServiceImpl implements LicenseService {
 
     @Override
     @CircuitBreaker(name = "license-service")
+    @Retry(name = "license-service")
     public Mono<Void> delete(String organizationId, String licenceId) {
         return licenseRepository.deleteByIdAndOrganizationId(licenceId, organizationId);
     }
 
     @Override
-    @CircuitBreaker(name = "license-service")
+    @CircuitBreaker(name = "license-service", fallbackMethod = "fallbackLicenseList")
+    @Retry(name = "license-service", fallbackMethod = "fallbackLicenseList")
     public Flux<License> findByOrganizationId(String organizationId) {
         return licenseRepository.findAllByOrganizationId(organizationId);
     }
 
     private Mono<License> fallbackFindOne(String organizationId, String licenceId, Throwable throwable) {
-        String licenceNotAvailableCode = "license.not.available";
+        log.error("Fallback method called for findOne with licenseId =>{}", licenceId);
+        log.error(throwable.getMessage(), throwable);
         return Mono.just(License.builder()
                 .id(licenceId)
+                .organizationId(organizationId)
+                .description(AppConstants.LICENSE_NOT_AVAILABLE)
+                .productName(AppConstants.LICENSE_NOT_AVAILABLE)
+                .licenceType(AppConstants.LICENSE_NOT_AVAILABLE)
+                .build());
+    }
+
+    private Flux<License> fallbackLicenseList(String organizationId, Throwable throwable) {
+        log.error(throwable.getMessage(), throwable);
+        return Flux.just(License.builder()
+                .id("0000-0000-0000")
                 .organizationId(organizationId)
                 .description(AppConstants.LICENSE_NOT_AVAILABLE)
                 .productName(AppConstants.LICENSE_NOT_AVAILABLE)

@@ -41,3 +41,18 @@ resilience4j:
           seconds: 20
         permitted-number-of-calls-in-half-open-state: 3
         sliding-window-type: count_based
+  retry:
+    instances:
+      license-service:
+        max-attempts: 3
+        wait-duration:
+          seconds: 2
+        retry-exceptions:
+          - java.util.concurrent.TimeoutException
+      organization-service:
+        max-attempts: 3
+        wait-duration:
+          seconds: 5
+        retry-exceptions:
+          - java.util.concurrent.TimeoutException
+          - org.springframework.web.client.ResourceAccessException

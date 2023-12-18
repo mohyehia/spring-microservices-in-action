@@ -5,6 +5,7 @@ import com.moh.yehia.licence.service.exception.NotFoundException;
 import com.moh.yehia.licence.service.model.OrganizationDTO;
 import com.moh.yehia.licence.service.service.design.OrganizationService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.MessageSource;
@@ -25,6 +26,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     @Override
     @CircuitBreaker(name = "organization-service", fallbackMethod = "fallbackFindOne")
+    @Retry(name = "organization-service", fallbackMethod = "fallbackFindOne")
     public Mono<OrganizationDTO> findOne(String organizationId) {
         return webClient.get()
                 .uri("http://organization-service/api/v1/organizations/{organizationSlug}", organizationId)
@@ -36,6 +38,7 @@ public class OrganizationServiceImpl implements OrganizationService {
 
     private Mono<OrganizationDTO> fallbackFindOne(String organizationId, Throwable throwable) {
         log.error("Fallback method called for findOne with organizationId: {}", organizationId);
+        log.error(throwable.getMessage(), throwable);
         return Mono.just(new OrganizationDTO(123L,
                 AppConstants.ORGANIZATION_NOT_AVAILABLE,
                 AppConstants.ORGANIZATION_NOT_AVAILABLE,
