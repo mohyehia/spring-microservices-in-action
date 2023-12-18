@@ -25,3 +25,15 @@ spring:
 
 server:
   port: 8081
+
+resilience4j:
+  circuit-breaker:
+    instances:
+      organization-service:
+        failure-rate-threshold: 50
+        minimum-number-of-calls: 4
+        automatic-transition-from-open-to-half-open-enabled: true
+        wait-duration-in-open-state:
+          seconds: 8
+        permitted-number-of-calls-in-half-open-state: 3
+        sliding-window-type: count_based
