@@ -1,12 +1,12 @@
 ### find all by organization
-GET http://localhost:8080/api/v1/organizations/un-org/licences
+GET http://localhost:8082/license-ms/api/v1/organizations/un-org/licences
 
 ### get license by id
-GET http://localhost:8080/api/v1/organizations/un-org/licences/657b16e279f9431c589ec610
+GET http://localhost:8082/license-ms/api/v1/organizations/un-org/licences/657b16e279f9431c589ec610
 
 
 ### add new license
-POST http://localhost:8080/api/v1/organizations/un-org/licences
+POST http://localhost:8082/license-ms/api/v1/organizations/un-org/licences
 Content-Type: application/json
 
 {
@@ -16,7 +16,7 @@ Content-Type: application/json
 }
 
 ### update license
-PUT http://localhost:8080/api/v1/organizations/un-org/licences/657b167b79f9431c589ec60f
+PUT http://localhost:8082/license-ms/api/v1/organizations/un-org/licences/657b167b79f9431c589ec60f
 Content-Type: application/json
 
 {
@@ -27,4 +27,4 @@ Content-Type: application/json
 
 
 ### delete license
-DELETE http://localhost:8080/api/v1/organizations/un-org/licences/657b167b79f9431c589ec60f
+DELETE http://localhost:8082/license-ms/api/v1/organizations/un-org/licences/657b167b79f9431c589ec60f

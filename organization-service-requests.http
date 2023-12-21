@@ -1,10 +1,10 @@
 
 ### get organization by slug
-GET http://localhost:8081/api/v1/organizations/un-org
+GET http://localhost:8082/organization-ms/api/v1/organizations/un-org
 
 
 ### save new organization
-POST http://localhost:8081/api/v1/organizations
+POST http://localhost:8082/organization-ms/api/v1/organizations
 Content-Type: application/json
 
 {
