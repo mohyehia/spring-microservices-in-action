@@ -10,4 +10,8 @@ public final class AppConstants {
     public static final String WEB_LINK_DELETE_LICENSE = "deleteLicense";
     public static final String LICENSE_NOT_AVAILABLE = "License info not available now!";
     public static final String ORGANIZATION_NOT_AVAILABLE = "Organization info not available now!";
+
+    public static final String CORRELATION_ID = "X-Correlation-ID";
+    public static final String USER_ID = "X-User-ID";
+
 }

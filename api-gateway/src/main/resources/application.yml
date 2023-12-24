@@ -33,12 +33,16 @@ spring:
             - Path=/organization-ms/**
           filters:
             - RewritePath=/organization-ms/(?<path>.*), /$\{path}
+            - AddRequestHeader=X-Tenant-ID, my-org
+            - AddResponseHeader=X-Tenant-ID, my-org
         - id: license-service
           uri: lb://license-service
           predicates:
             - Path=/license-ms/**
           filters:
             - RewritePath=/license-ms/(?<path>.*), /$\{path}
+            - AddRequestHeader=X-Tenant-ID, my-org
+            - AddResponseHeader=X-Tenant-ID, my-org
 
 server:
   port: 8082
@@ -51,3 +55,8 @@ management:
     web:
       exposure:
         include: gateway
+
+logging:
+  level:
+    root: info
+    org.springframework.cloud.gateway: trace
