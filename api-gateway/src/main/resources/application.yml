@@ -33,7 +33,6 @@ spring:
       filter:
         request-rate-limiter:
           enabled: true
-          deny-empty-key: false
       routes:
         - id: organization-service
           uri: lb://organization-service
