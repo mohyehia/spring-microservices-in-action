@@ -36,3 +36,19 @@ services:
       POSTGRES_USER: organization-user
       POSTGRES_PASSWORD: P@ssw0rd
       POSTGRES_DB: organization-db
+
+  redis:
+    container_name: redis-ctr
+    image: redis:7.2.1
+    restart: unless-stopped
+    ports:
+      - '6379:6379'
+
+  redis-insight:
+    container_name: redis-insight-ctr
+    image: redislabs/redisinsight:latest
+    restart: unless-stopped
+    ports:
+      - '8001:8001'
+    volumes:
+      - ./docker/volumes/redis-insights:/db

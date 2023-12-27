@@ -2,6 +2,10 @@ spring:
   application:
     name: api-gateway
 
+  data:
+    redis:
+      host: redis
+      port: 6379
   config:
     import: optional:consul:${spring.cloud.consul.host}:${spring.cloud.consul.port}
   cloud:
@@ -26,6 +30,10 @@ spring:
       discovery:
         locator:
           enabled: false
+      filter:
+        request-rate-limiter:
+          enabled: true
+          deny-empty-key: false
       routes:
         - id: organization-service
           uri: lb://organization-service
@@ -35,6 +43,11 @@ spring:
             - RewritePath=/organization-ms/(?<path>.*), /$\{path}
             - AddRequestHeader=X-Tenant-ID, my-org
             - AddResponseHeader=X-Tenant-ID, my-org
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
         - id: license-service
           uri: lb://license-service
           predicates:
@@ -43,6 +56,11 @@ spring:
             - RewritePath=/license-ms/(?<path>.*), /$\{path}
             - AddRequestHeader=X-Tenant-ID, my-org
             - AddResponseHeader=X-Tenant-ID, my-org
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                redis-rate-limiter.requestedTokens: 1
 
 server:
   port: 8082
