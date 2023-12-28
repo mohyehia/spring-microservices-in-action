@@ -52,3 +52,29 @@ services:
       - '8001:8001'
     volumes:
       - ./docker/volumes/redis-insights:/db
+
+  prometheus:
+    container_name: prometheus-ctr
+    image: prom/prometheus:v2.47.0
+    restart: unless-stopped
+    ports:
+      - '9090:9090'
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./docker/volumes/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    container_name: grafana-ctr
+    image: grafana/grafana-oss:10.1.2
+    restart: unless-stopped
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./docker/volumes/grafana/data:/var/lib/grafana
+      - ./docker/volumes/grafana/provisioning/datasources/:/etc/grafana/provisioning/datasources/
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
