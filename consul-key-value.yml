@@ -1,0 +1,49 @@
+# common properties inside this directory -> config/application/data
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: always
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+  health:
+    diskspace:
+      enabled: true
+    circuit-breakers:
+      enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+
+jaeger:
+  tracing:
+    url: http://localhost:4318/v1/traces
+
+logging:
+  pattern:
+    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+
+---
+# license-service inside this directory -> config/license-service/data
+spring:
+  data:
+    mongodb:
+      url: mongodb://mongo-db:27017/license-db
+
+
+# organization-service inside this directory -> config/organization-service/data
+---
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://postgres-db:5432/organization-db
+    username: organization-user
+    password: P@ssw0rd
+  flyway:
+    sql-migration-prefix: V
+    sql-migration-separator: __
+    sql-migration-suffixes: .sql
+    url: jdbc:postgresql://postgres-db:5432/organization-db
