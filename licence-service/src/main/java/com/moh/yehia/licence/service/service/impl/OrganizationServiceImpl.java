@@ -6,6 +6,10 @@ import com.moh.yehia.licence.service.model.OrganizationDTO;
 import com.moh.yehia.licence.service.service.design.OrganizationService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
+import io.micrometer.observation.Observation;
+import io.micrometer.observation.ObservationRegistry;
+import io.micrometer.observation.contextpropagation.ObservationThreadLocalAccessor;
+import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.context.MessageSource;
@@ -16,6 +20,7 @@ import reactor.core.publisher.Mono;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -23,17 +28,24 @@ import java.time.LocalDateTime;
 public class OrganizationServiceImpl implements OrganizationService {
     private final WebClient webClient;
     private final MessageSource messageSource;
+    private final ObservationRegistry observationRegistry;
+    private final Tracer tracer;
 
     @Override
     @CircuitBreaker(name = "organization-service", fallbackMethod = "fallbackFindOne")
     @Retry(name = "organization-service", fallbackMethod = "fallbackFindOne")
     public Mono<OrganizationDTO> findOne(String organizationId) {
-        return webClient.get()
-                .uri("http://organization-service/api/v1/organizations/{organizationSlug}", organizationId)
-                .retrieve()
-                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new NotFoundException("Organization not found")))
-                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Server error")))
-                .bodyToMono(OrganizationDTO.class);
+        var observation = Observation.createNotStarted("organization-lookup", observationRegistry);
+        return Objects.requireNonNull(observation.observe(() ->
+                        Mono.defer(() -> webClient.get()
+                                .uri("http://organization-service/api/v1/organizations/{organizationSlug}", organizationId)
+                                .retrieve()
+                                .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new NotFoundException("Organization not found")))
+                                .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Server error")))
+                                .bodyToMono(OrganizationDTO.class))
+                ))
+                .doFinally(signalType -> observation.stop())
+                .contextWrite(context -> context.put(ObservationThreadLocalAccessor.KEY, observation));
     }
 
     private Mono<OrganizationDTO> fallbackFindOne(String organizationId, Throwable throwable) {

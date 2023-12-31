@@ -78,3 +78,12 @@ services:
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
+
+  jaeger:
+    container_name: jaeger-ctr
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - '4318:4318'
+      - '16686:16686'
+    environment:
+      COLLECTOR_OTLP_ENABLED: true

@@ -56,3 +56,6 @@ resilience4j:
         retry-exceptions:
           - java.util.concurrent.TimeoutException
           - org.springframework.web.client.ResourceAccessException
+
+server:
+  port: 8083
