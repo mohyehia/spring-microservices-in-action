@@ -26,7 +26,7 @@ services:
 
   postgres-db:
     container_name: postgres-ctr
-    image: postgres:16.0
+    image: postgres:16.2
     restart: unless-stopped
     ports:
       - '5432:5432'
@@ -39,7 +39,7 @@ services:
 
   redis:
     container_name: redis-ctr
-    image: redis:7.2.1
+    image: redis:7.2.4
     restart: unless-stopped
     ports:
       - '6379:6379'
@@ -55,7 +55,7 @@ services:
 
   prometheus:
     container_name: prometheus-ctr
-    image: prom/prometheus:v2.47.0
+    image: prom/prometheus:v2.49.1
     restart: unless-stopped
     ports:
       - '9090:9090'
@@ -68,7 +68,7 @@ services:
 
   grafana:
     container_name: grafana-ctr
-    image: grafana/grafana-oss:10.1.2
+    image: grafana/grafana-oss:latest
     restart: unless-stopped
     ports:
       - '3000:3000'
@@ -99,8 +99,6 @@ services:
       ELASTIC_USERNAME: elastic
       ELASTIC_PASSWORD: P@ssw0rd
       xpack.security.enabled: "true"
-    volumes:
-      - ./docker/volumes/elastic/elasticsearch:/usr/share/elasticsearch/data
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -130,3 +128,52 @@ services:
     user: root
     depends_on:
       - elasticsearch
+
+
+  api-gateway:
+    image: mohyehia99/api-gateway:0.0.1
+    container_name: api-gateway-ctr
+    ports:
+      - '8082:8082'
+    depends_on:
+      - consul
+      - jaeger
+      - redis
+    labels:
+      collect_logs_with_filebeat: "true"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+
+  licence-service:
+    image: mohyehia99/licence-service:0.0.1
+    container_name: licence-service-ctr
+    ports:
+      - '8083:8083'
+    depends_on:
+      - consul
+      - jaeger
+      - mongo-db
+    labels:
+      collect_logs_with_filebeat: "true"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+
+  organization-service:
+    image: mohyehia99/organization-service:0.0.1
+    container_name: organization-service-ctr
+    ports:
+      - '8081:8081'
+    depends_on:
+      - consul
+      - jaeger
+      - postgres-db
+    labels:
+      collect_logs_with_filebeat: "true"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3

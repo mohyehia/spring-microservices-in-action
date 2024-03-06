@@ -21,7 +21,7 @@ management:
 
 jaeger:
   tracing:
-    url: http://localhost:4318/v1/traces
+    url: http://jaeger:4318/v1/traces
 
 logging:
   pattern:
@@ -32,7 +32,9 @@ logging:
 spring:
   data:
     mongodb:
-      url: mongodb://mongo-db:27017/license-db
+      host: mongo-db
+      port: 27017
+      database: license-db
 
 
 # organization-service inside this directory -> config/organization-service/data
