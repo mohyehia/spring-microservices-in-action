@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: licence-service
+spec:
+  selector:
+    app: licence-service
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8083
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: licence-service-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: licence-service
+  template:
+    metadata:
+      labels:
+        app: licence-service
+    spec:
+      containers:
+        - name: licence-service-ctr
+          image: mohyehia99/licence-service:0.0.1
+          ports:
+            - containerPort: 8083
+              protocol: TCP

@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      containers:
+        - name: grafana-ctr
+          image: grafana/grafana-oss:latest
+          ports:
+            - containerPort: 3000
+              name: grafana
+              protocol: TCP
+          resources:
+            requests:
+              memory: 500M
+              cpu: '500m'
+            limits:
+              memory: '1Gi'
+              cpu: '1000m'
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-vol
+            - mountPath: /etc/grafana/provisioning/datasources
+              name: grafana-datasources
+              readOnly: false
+      volumes:
+        - name: grafana-vol
+          emptyDir: {}
+        - name: grafana-datasources
+          configMap:
+            name: grafana-cm
+            defaultMode: 420
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  namespace: monitoring
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '3000'
+spec:
+  type: ClusterIP
+  selector:
+    app: grafana
+  ports:
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP

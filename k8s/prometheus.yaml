@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-deployment
+  namespace: monitoring
+  labels:
+    name: prometheus-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus-server
+  template:
+    metadata:
+      labels:
+        app: prometheus-server
+    spec:
+      containers:
+        - name: prometheus-ctr
+          image: prom/prometheus:v2.49.1
+          args:
+            - '--storage.tsdb.retention.time=12h'
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--storage.tsdb.path=/prometheus/'
+          ports:
+            - containerPort: 9090
+          resources:
+            requests:
+              memory: 500M
+              cpu: 500m
+            limits:
+              memory: 1Gi
+              cpu: '1'
+          volumeMounts:
+            - mountPath: /etc/prometheus/
+              name: prometheus-config-vol
+            - mountPath: /prometheus/
+              name: prometheus-storage-vol
+      volumes:
+        - name: prometheus-config-vol
+          configMap:
+            name: prometheus-cm
+            defaultMode: 420
+        - name: prometheus-storage-vol
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-service
+  namespace: monitoring
+spec:
+  type: ClusterIP
+  selector:
+    app: prometheus-server
+  ports:
+    - port: 9090
+      targetPort: 9090
+      protocol: TCP

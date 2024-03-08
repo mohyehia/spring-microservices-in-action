@@ -1,0 +1,58 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: postgres-sc
+provisioner: k8s.io/minikube-hostpath
+volumeBindingMode: Immediate
+reclaimPolicy: Delete
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-db
+spec:
+  clusterIP: None
+  selector:
+    app: postgres-db
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres-sts
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  serviceName: 'postgres-db'
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres-ctr
+          image: postgres:16.2
+          env:
+            - name: POSTGRES_USER
+              value: organization-user
+            - name: POSTGRES_PASSWORD
+              value: P@ssw0rd
+            - name: POSTGRES_DB
+              value: organization-db
+          volumeMounts:
+            - mountPath: /data/db
+              name: postgres-vol
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-vol
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        storageClassName: 'postgres-sc'
+        resources:
+          requests:
+            storage: 1Gi
