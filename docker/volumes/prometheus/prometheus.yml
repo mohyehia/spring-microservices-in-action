@@ -23,3 +23,23 @@ scrape_configs:
       - targets: ['host.docker.internal:8081']
         labels:
           application: 'Organization Service'
+
+  - job_name: 'postgres-exporter'
+    metrics_path: /metrics
+    static_configs:
+      - targets: ['host.docker.internal:9187']
+
+  - job_name: 'mongo-exporter'
+    metrics_path: /metrics
+    static_configs:
+      - targets: [ 'host.docker.internal:9216' ]
+
+  - job_name: 'elasticsearch_exporter'
+    metrics_path: /metrics
+    static_configs:
+      - targets: [ 'host.docker.internal:9114' ]
+
+  - job_name: 'consul-exporter'
+    metrics_path: /metrics
+    static_configs:
+      - targets: [ 'host.docker.internal:9107' ]

@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  postgres-exporter:
+    image: bitnami/postgres-exporter:latest
+    container_name: postgres-exporter-ctr
+    ports:
+      - '9187:9187'
+    environment:
+      DATA_SOURCE_NAME: "postgresql://${DB_USER:-organization-user}:${DB_PASS:-P@ssw0rd}@postgres-db:5432/organization-db?sslmode=disable"
+
+  mongo-exporter:
+    image: bitnami/mongodb-exporter:latest
+    container_name: mongo-exporter-ctr
+    restart: always
+    ports:
+      - '9216:9216'
+    environment:
+      MONGODB_URI: 'mongodb://mongo-db:27017/license-db'
+
+  elasticsearch_exporter:
+    image: quay.io/prometheuscommunity/elasticsearch-exporter:latest
+    command:
+      - '--es.uri=http://elastic:${ELASTIC_PASS:-P@ssw0rd}@elasticsearch:9200'
+    restart: always
+    ports:
+      - "9114:9114"
+
+  consul-exporter:
+    image: prom/consul-exporter:latest
+    restart: always
+    ports:
+      - '9107:9107'
+    command:
+      - '--consul.server=http://consul:8500'
