@@ -10,36 +10,36 @@ spec:
       app: grafana
   template:
     metadata:
+      name: grafana
       labels:
         app: grafana
     spec:
       containers:
-        - name: grafana-ctr
-          image: grafana/grafana-oss:latest
+        - name: grafana
+          image: grafana/grafana:latest
           ports:
-            - containerPort: 3000
-              name: grafana
-              protocol: TCP
+            - name: grafana
+              containerPort: 3000
           resources:
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
             requests:
               memory: 500M
-              cpu: '500m'
-            limits:
-              memory: '1Gi'
-              cpu: '1000m'
+              cpu: "500m"
           volumeMounts:
             - mountPath: /var/lib/grafana
-              name: grafana-vol
+              name: grafana-storage
             - mountPath: /etc/grafana/provisioning/datasources
               name: grafana-datasources
               readOnly: false
       volumes:
-        - name: grafana-vol
-          emptyDir: {}
+        - name: grafana-storage
+          emptyDir: { }
         - name: grafana-datasources
           configMap:
-            name: grafana-cm
             defaultMode: 420
+            name: grafana-datasources
 ---
 apiVersion: v1
 kind: Service
@@ -50,10 +50,10 @@ metadata:
     prometheus.io/scrape: 'true'
     prometheus.io/port: '3000'
 spec:
-  type: ClusterIP
   selector:
     app: grafana
+  type: NodePort
   ports:
     - port: 3000
       targetPort: 3000
-      protocol: TCP
+      nodePort: 32000

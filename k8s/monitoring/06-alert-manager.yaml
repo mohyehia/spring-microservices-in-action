@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alert-manager
+  namespace: monitoring
+  labels:
+    app: alert-manager
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: alert-manager
+  template:
+    metadata:
+      name: alert-manager
+      labels:
+        app: alert-manager
+    spec:
+      containers:
+        - name: alert-manager
+          image: bitnami/alertmanager:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 9093
+          args:
+            - '--config.file=/opt/bitnami/alertmanager/conf/config.yml'
+          resources:
+            requests:
+              cpu: 500m
+              memory: 500M
+            limits:
+              cpu: '1'
+              memory: '500M'
+          volumeMounts:
+            - mountPath: /opt/bitnami/alertmanager/conf
+              name: config-vol
+      volumes:
+        - name: config-vol
+          configMap:
+            name: alert-manager-cm
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alert-manager
+  namespace: monitoring
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port:   '9093'
+spec:
+  selector:
+    app: alert-manager
+  type: NodePort
+  ports:
+    - port: 9093
+      name: alert-manager
+      targetPort: 9093
+      nodePort: 30005
+      protocol: TCP

@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alert-manager-cm
+  namespace: monitoring
+data:
+  config.yml: |-
+    global:
+      smtp_smarthost: 'mailhog.monitoring.svc:1025'
+      smtp_from: 'alert-manager@observability.com'
+      smtp_require_tls: false
+    route:
+      receiver: 'default-root-route'
+      group_wait: 30s
+    receivers:
+      - name: 'default-root-route'
+        email_configs:
+          - to: 'devops-team@observability.com'
+            send_resolved: true
+            from: 'devops.apps@observability.com'
+            require_tls: false
