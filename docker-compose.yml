@@ -14,7 +14,7 @@ services:
       - host.docker.internal:host-gateway
 
   mongo-db:
-    container_name: mongo-ctr
+    container_name: mongodb
     image: mongo:latest
     restart: unless-stopped
     ports:
@@ -22,7 +22,8 @@ services:
     expose:
       - '27017'
     volumes:
-      - ./docker/volumes/mongo:/data/db
+      - ./docker/volumes/mongo/data:/data/db
+      - ./docker/volumes/mongo/init/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
   postgres-db:
     container_name: postgres-ctr

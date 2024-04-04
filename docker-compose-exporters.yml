@@ -15,7 +15,7 @@ services:
     ports:
       - '9216:9216'
     environment:
-      MONGODB_URI: 'mongodb://mongo-db:27017/license-db'
+      MONGODB_URI: 'mongodb://mongodb_exporter:password@mongo-db:27017'
 
   elasticsearch_exporter:
     image: quay.io/prometheuscommunity/elasticsearch-exporter:latest
