@@ -59,3 +59,7 @@ resilience4j:
 
 server:
   port: 8083
+
+organization:
+  base:
+    api: ${ORGANIZATION_MS_API:http://organization-service/api/v1/organizations/{organizationSlug}}

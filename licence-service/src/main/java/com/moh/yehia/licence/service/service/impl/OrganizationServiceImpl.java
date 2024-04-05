@@ -12,6 +12,7 @@ import io.micrometer.observation.contextpropagation.ObservationThreadLocalAccess
 import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     private final ObservationRegistry observationRegistry;
     private final Tracer tracer;
 
+    @Value("${organization.base.api}")
+    private String organizationAPI;
+
     @Override
     @CircuitBreaker(name = "organization-service", fallbackMethod = "fallbackFindOne")
     @Retry(name = "organization-service", fallbackMethod = "fallbackFindOne")
@@ -38,7 +42,7 @@ public class OrganizationServiceImpl implements OrganizationService {
         var observation = Observation.createNotStarted("organization-lookup", observationRegistry);
         return Objects.requireNonNull(observation.observe(() ->
                         Mono.defer(() -> webClient.get()
-                                .uri("http://organization-service/api/v1/organizations/{organizationSlug}", organizationId)
+                                .uri(organizationAPI, organizationId)
                                 .retrieve()
                                 .onStatus(HttpStatusCode::is4xxClientError, clientResponse -> Mono.error(new NotFoundException("Organization not found")))
                                 .onStatus(HttpStatusCode::is5xxServerError, clientResponse -> Mono.error(new RuntimeException("Server error")))
