@@ -7,8 +7,9 @@ spec:
     app: api-gateway
   ports:
     - protocol: TCP
-      port: 80
+      port: 8082
       targetPort: 8082
+      nodePort: 30005
   type: NodePort
 ---
 apiVersion: apps/v1

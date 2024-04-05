@@ -3,23 +3,23 @@ kind: Service
 metadata:
   name: postgres-db
 spec:
-  clusterIP: None
+  type: ClusterIP
   selector:
-    app: postgres-db
+    app: postgres
   ports:
     - port: 5432
       targetPort: 5432
+      protocol: TCP
 ---
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
-  name: postgres-sts
+  name: postgres-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: postgres
-  serviceName: 'postgres-db'
   template:
     metadata:
       labels:
@@ -35,15 +35,3 @@ spec:
               value: P@ssw0rd
             - name: POSTGRES_DB
               value: organization-db
-          volumeMounts:
-            - mountPath: /data/db
-              name: postgres-vol
-  volumeClaimTemplates:
-    - metadata:
-        name: postgres-vol
-      spec:
-        accessModes:
-          - ReadWriteOnce
-        resources:
-          requests:
-            storage: 1Gi
