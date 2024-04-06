@@ -6,26 +6,8 @@ spring:
     redis:
       host: redis
       port: 6379
-  config:
-    import: optional:consul:${spring.cloud.consul.host}:${spring.cloud.consul.port}
+
   cloud:
-    consul:
-      host: consul
-      port: 8500
-      config:
-        enabled: true
-        format: yaml
-      discovery:
-        enabled: true
-        register: true
-        health-check-interval: 15s
-        instance-id: ${spring.application.name}:${random.uuid}
-        health-check-path: /actuator/health
-        metadata:
-          department: ${SERVICE_DEPARTMENT:Information Technology}
-          team: ${SERVICE_TEAM:Software Development}
-          env: ${SERVICE_ENVIRONMENT:dev}
-          region: ${SERVICE_REGION:us-east1}
     gateway:
       discovery:
         locator:
@@ -68,12 +50,35 @@ management:
   endpoint:
     gateway:
       enabled: true
+    health:
+      probes:
+        enabled: true
+      show-details: always
+      enabled: true
   endpoints:
     web:
       exposure:
         include: gateway
+  health:
+    diskspace:
+      enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+  observations:
+    key-values:
+      department: ${SERVICE_DEPARTMENT:Information Technology}
+      team: ${SERVICE_TEAM:Software Development}
+      env: ${SERVICE_ENVIRONMENT:dev}
+      region: ${SERVICE_REGION:us-east1}
+
+jaeger:
+  tracing:
+    url: http://jaeger:4318/v1/traces
 
 logging:
   level:
     root: info
     org.springframework.cloud.gateway: trace
+  pattern:
+    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'

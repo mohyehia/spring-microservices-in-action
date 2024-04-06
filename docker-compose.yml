@@ -1,17 +1,5 @@
 version: '3.8'
 services:
-  consul:
-    container_name: consul-ctr
-    image: hashicorp/consul:latest
-    restart: unless-stopped
-    ports:
-      - '8500:8500'
-    volumes:
-      - ./docker/volumes/consul/data:/consul/data
-      - ./docker/volumes/consul/config/consul-config.json:/consul/config/config.json
-    command: agent -server -bind 0.0.0.0 -client 0.0.0.0 -bootstrap-expect 1 -config-file=/consul/config/config.json
-    extra_hosts:
-      - host.docker.internal:host-gateway
 
   mongo-db:
     container_name: mongodb
@@ -132,12 +120,11 @@ services:
 
 
   api-gateway:
-    image: mohyehia99/api-gateway:0.0.1
+    image: mohyehia99/api-gateway:0.0.2
     container_name: api-gateway-ctr
     ports:
       - '8082:8082'
     depends_on:
-      - consul
       - jaeger
       - redis
     labels:
@@ -148,12 +135,11 @@ services:
         max_attempts: 3
 
   licence-service:
-    image: mohyehia99/licence-service:0.0.1
+    image: mohyehia99/licence-service:0.0.2
     container_name: licence-service-ctr
     ports:
       - '8083:8083'
     depends_on:
-      - consul
       - jaeger
       - mongo-db
     labels:
@@ -164,12 +150,11 @@ services:
         max_attempts: 3
 
   organization-service:
-    image: mohyehia99/organization-service:0.0.1
+    image: mohyehia99/organization-service:0.0.2
     container_name: organization-service-ctr
     ports:
       - '8081:8081'
     depends_on:
-      - consul
       - jaeger
       - postgres-db
     labels:

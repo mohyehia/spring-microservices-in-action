@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.moh.yehia</groupId>
 	<artifactId>organization-service</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<name>organization-service</name>
 	<description>Demo project for Spring Boot</description>
 	<properties>
@@ -35,14 +35,7 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-consul-config</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-consul-discovery</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-r2dbc</artifactId>
