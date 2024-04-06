@@ -148,6 +148,8 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 3
+    environment:
+      ORGANIZATION_MS_API: http://organization-service:8081/api/v1/organizations/{organizationSlug}
 
   organization-service:
     image: mohyehia99/organization-service:0.0.2
