@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: api-gateway-ctr
-          image: mohyehia99/api-gateway:0.0.1
+          image: mohyehia99/api-gateway:0.0.2
           ports:
             - containerPort: 8082
               protocol: TCP
