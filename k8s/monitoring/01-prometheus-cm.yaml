@@ -149,3 +149,24 @@ data:
           - source_labels: [__meta_kubernetes_service_name]
             action: replace
             target_label: kubernetes_name
+
+      - job_name: 'api-gateway'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: ['api-gateway.dev.svc.cluster.local:8082']
+            labels:
+              application: 'API Gateway'
+
+      - job_name: 'license-service'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: ['license-service.dev.svc.cluster.local:80']
+            labels:
+              application: 'License Service'
+
+      - job_name: 'organization-service'
+        metrics_path: /actuator/prometheus
+        static_configs:
+          - targets: ['organization-service.dev.svc.cluster.local:80']
+            labels:
+              application: 'Organization Service'
