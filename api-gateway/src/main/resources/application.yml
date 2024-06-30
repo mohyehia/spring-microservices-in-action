@@ -20,7 +20,7 @@ spring:
           enabled: true
       routes:
         - id: organization-service
-          uri: http://organization-service
+          uri: ${ORGANIZATION_SERVICE_URI:http://organization-service}
           predicates:
             - Path=/organization-ms/**
           filters:
@@ -33,7 +33,7 @@ spring:
                 redis-rate-limiter.burstCapacity: 20
                 redis-rate-limiter.requestedTokens: 1
         - id: license-service
-          uri: http://license-service
+          uri: ${LICENSE_SERVICE_URI:http://license-service}
           predicates:
             - Path=/license-ms/**
           filters:

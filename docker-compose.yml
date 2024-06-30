@@ -132,6 +132,9 @@ services:
       restart_policy:
         condition: on-failure
         max_attempts: 3
+    environment:
+      ORGANIZATION_SERVICE_URI: http://organization-service:8081
+      LICENSE_SERVICE_URI: http://licence-service:8083
 
   licence-service:
     image: mohyehia99/licence-service:0.0.2
