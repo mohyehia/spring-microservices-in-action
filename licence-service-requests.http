@@ -2,7 +2,7 @@
 GET http://localhost:8082/license-ms/api/v1/organizations/un-org/licences
 
 ### get license by id
-GET http://localhost:8082/license-ms/api/v1/organizations/un-org/licences/657b16e279f9431c589ec610
+GET http://localhost:8082/license-ms/api/v1/organizations/un-org/licences/6611e65a140e277f996cf464
 
 
 ### add new license
@@ -10,8 +10,8 @@ POST http://localhost:8082/license-ms/api/v1/organizations/un-org/licences
 Content-Type: application/json
 
 {
-  "description": "some other description",
-  "productName": "dummy-license for un",
+  "description": "second description for licence",
+  "productName": "second product",
   "licenceType": "full"
 }
 

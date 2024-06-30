@@ -2,6 +2,9 @@ spring:
   application:
     name: api-gateway
 
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
   data:
     redis:
       host: redis
@@ -45,6 +48,7 @@ spring:
 
 server:
   port: 8082
+  shutdown: graceful
 
 management:
   endpoint:

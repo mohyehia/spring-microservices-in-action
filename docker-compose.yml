@@ -3,7 +3,7 @@ services:
 
   mongo-db:
     container_name: mongodb
-    image: mongo:latest
+    image: mongo:4.4.29-focal
     restart: unless-stopped
     ports:
       - '27017:27017'
@@ -11,7 +11,6 @@ services:
       - '27017'
     volumes:
       - ./docker/volumes/mongo/data:/data/db
-      - ./docker/volumes/mongo/init/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
   postgres-db:
     container_name: postgres-ctr
@@ -28,7 +27,7 @@ services:
 
   redis:
     container_name: redis-ctr
-    image: redis:7.2.4
+    image: redis:latest
     restart: unless-stopped
     ports:
       - '6379:6379'
@@ -44,7 +43,7 @@ services:
 
   prometheus:
     container_name: prometheus-ctr
-    image: prom/prometheus:v2.49.1
+    image: prom/prometheus:v2.51.2
     restart: unless-stopped
     ports:
       - '9090:9090'

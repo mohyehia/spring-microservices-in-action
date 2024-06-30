@@ -12,8 +12,12 @@ spring:
     sql-migration-suffixes: .sql
     url: jdbc:postgresql://postgres-db:5432/organization-db
 
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
+
 server:
   port: 8081
+  shutdown: graceful
 
 resilience4j:
   circuit-breaker:

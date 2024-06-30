@@ -8,6 +8,8 @@ spring:
       port: 27017
       database: license-db
 
+  lifecycle:
+    timeout-per-shutdown-phase: 30s
 resilience4j:
   circuit-breaker:
     instances:
@@ -45,6 +47,7 @@ resilience4j:
 
 server:
   port: 8083
+  shutdown: graceful
 
 management:
   endpoint:

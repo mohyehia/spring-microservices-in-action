@@ -1,0 +1,1 @@
+create unique index slug_idx on organizations (slug desc);
