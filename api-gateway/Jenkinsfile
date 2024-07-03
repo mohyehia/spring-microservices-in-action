@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        BUILD_VERSION = readMavenPom().getVersion()
+        BUILD_VERSION = readMavenPom('api-gateway/pom.xml').getVersion()
         DOCKER_IMAGE = 'mohyehia99/api-gateway'
     }
 
