@@ -28,14 +28,18 @@ pipeline {
 
         stage('Unit Testing') {
             steps {
-                sh 'mvn clean test'
+                dir('api-gateway'){
+                    sh 'mvn clean test'
+                }
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv(credentialsId: 'sonarQube-token', installationName: 'SonarQube') {
-                    sh "mvn verify sonar:sonar -DskipTests=true -Dsonar.projectKey=api-gateway -Dsonar.projectName='api-gateway'"
+                    dir('api-gateway'){
+                        sh "mvn verify sonar:sonar -DskipTests=true -Dsonar.projectKey=api-gateway -Dsonar.projectName='api-gateway'"
+                    }
                 }
                 waitForQualityGate abortPipeline: true
             }
@@ -43,30 +47,38 @@ pipeline {
 
         stage('Package') {
             steps {
-                sh 'mvn package -Dmaven.test.skip'
+                dir('api-gateway'){
+                    sh 'mvn package -Dmaven.test.skip'
+                }
             }
         }
 
         stage('Publish test results') {
             steps {
-                junit "**/target/surefire-reports/*.xml"
+                dir('api-gateway'){
+                    junit "**/target/surefire-reports/*.xml"
+                }
             }
         }
 
         stage('OWASP Dependency Check') {
             steps {
-                dependencyCheck additionalArguments: '''
+                dir('api-gateway'){
+                    dependencyCheck additionalArguments: '''
                     -o './\'
                     -s './\'
                     -f 'ALL'
                     --prettyPrint''', odcInstallation: 'OWASP Dependency Check'
-                dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                    dependencyCheckPublisher pattern: 'dependency-check-report.xml'
+                }
             }
         }
 
         stage('Trivy FS Scan') {
             steps {
-                sh 'trivy fs .'
+                dir('api-gateway'){
+                    sh 'trivy fs .'
+                }
             }
         }
 
