@@ -41,7 +41,7 @@ pipeline {
             steps {
                 withSonarQubeEnv(credentialsId: 'sonarQube-token', installationName: 'SonarQube') {
                     dir('organization-service') {
-                        sh "mvn verify sonar:sonar -DskipTests=true -Dsonar.projectKey=licence-service -Dsonar.projectName='licence-service'"
+                        sh "mvn verify sonar:sonar -DskipTests=true -Dsonar.projectKey=organization-service -Dsonar.projectName='organization-service'"
                     }
                 }
                 waitForQualityGate abortPipeline: true
