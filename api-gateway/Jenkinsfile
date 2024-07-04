@@ -15,6 +15,9 @@ pipeline {
         stage('Clean Workspace') {
             steps {
                 script {
+                    sh """ 
+                        echo "Build number is: ${env.BUILD_NUMBER}"
+                    """
                     cleanWs()
                 }
             }
@@ -28,7 +31,7 @@ pipeline {
 
         stage('Unit Testing') {
             steps {
-                dir('api-gateway'){
+                dir('api-gateway') {
                     sh 'mvn clean test'
                 }
             }
@@ -37,7 +40,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv(credentialsId: 'sonarQube-token', installationName: 'SonarQube') {
-                    dir('api-gateway'){
+                    dir('api-gateway') {
                         sh "mvn verify sonar:sonar -DskipTests=true -Dsonar.projectKey=api-gateway -Dsonar.projectName='api-gateway'"
                     }
                 }
@@ -47,23 +50,15 @@ pipeline {
 
         stage('Package') {
             steps {
-                dir('api-gateway'){
+                dir('api-gateway') {
                     sh 'mvn package -Dmaven.test.skip'
-                }
-            }
-        }
-
-        stage('Publish test results') {
-            steps {
-                dir('api-gateway'){
-                    junit "**/target/surefire-reports/*.xml"
                 }
             }
         }
 
         stage('OWASP Dependency Check') {
             steps {
-                dir('api-gateway'){
+                dir('api-gateway') {
                     dependencyCheck additionalArguments: '''
                     -o './\'
                     -s './\'
@@ -76,7 +71,7 @@ pipeline {
 
         stage('Trivy FS Scan') {
             steps {
-                dir('api-gateway'){
+                dir('api-gateway') {
                     sh 'trivy fs .'
                 }
             }
