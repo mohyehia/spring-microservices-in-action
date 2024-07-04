@@ -149,14 +149,8 @@
 				<configuration>
 					<image>
 						<name>mohyehia99/${project.name}:${project.version}</name>
-						<publish>true</publish>
+						<publish>false</publish>
 					</image>
-					<docker>
-						<publishRegistry>
-							<username>${dockerId}</username>
-							<password>${dockerPassword}</password>
-						</publishRegistry>
-					</docker>
 					<excludes>
 						<exclude>
 							<groupId>org.projectlombok</groupId>
