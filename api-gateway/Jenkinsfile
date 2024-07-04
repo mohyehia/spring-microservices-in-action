@@ -16,7 +16,7 @@ pipeline {
             steps {
                 script {
                     sh """ 
-                        echo "Build number is: ${env.BUILD_NUMBER}"
+                        echo "Build number is: ${BUILD_VERSION}"
                     """
                     cleanWs()
                 }
