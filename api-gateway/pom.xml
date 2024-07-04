@@ -91,12 +91,6 @@
 						<name>mohyehia99/${project.name}:${project.version}</name>
 						<publish>false</publish>
 					</image>
-<!--					<docker>-->
-<!--						<publishRegistry>-->
-<!--							<username>${dockerId}</username>-->
-<!--							<password>${dockerPassword}</password>-->
-<!--						</publishRegistry>-->
-<!--					</docker>-->
 				</configuration>
 			</plugin>
 		</plugins>
