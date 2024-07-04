@@ -66,7 +66,9 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                sh "mvn spring-boot:build-image -DskipTests"
+                dir('api-gateway') {
+                    sh "mvn spring-boot:build-image -DskipTests"
+                }
             }
         }
 
