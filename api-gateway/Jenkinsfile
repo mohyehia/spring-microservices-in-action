@@ -6,10 +6,9 @@ pipeline {
     }
 
     environment {
-        dir('api-gateway') {
-            BUILD_VERSION = readMavenPom().getVersion()
-            DOCKER_IMAGE = 'mohyehia99/api-gateway'
-        }
+        pom = readMavenPom file: 'api-gateway/pom.xml'
+        BUILD_VERSION = pom.version
+        DOCKER_IMAGE = 'mohyehia99/api-gateway'
     }
 
     stages {
