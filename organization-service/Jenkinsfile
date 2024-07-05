@@ -9,6 +9,7 @@ pipeline {
         pom = readMavenPom file: 'organization-service/pom.xml'
         BUILD_VERSION = "${pom.version}"
         DOCKER_IMAGE = 'mohyehia99/organization-service'
+        DIR = 'organization-service'
     }
 
     stages {
@@ -31,7 +32,7 @@ pipeline {
 
         stage('Unit Testing') {
             steps {
-                dir('organization-service') {
+                dir("${DIR}") {
                     sh 'mvn clean test'
                 }
             }
@@ -40,7 +41,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv(credentialsId: 'sonarQube-token', installationName: 'SonarQube') {
-                    dir('organization-service') {
+                    dir("${DIR}") {
                         sh "mvn verify sonar:sonar -DskipTests=true -Dsonar.projectKey=organization-service -Dsonar.projectName='organization-service'"
                     }
                 }
@@ -50,7 +51,7 @@ pipeline {
 
         stage('Package') {
             steps {
-                dir('organization-service') {
+                dir("${DIR}") {
                     sh 'mvn package -Dmaven.test.skip'
                 }
             }
@@ -58,7 +59,7 @@ pipeline {
 
         stage('Trivy FS Scan') {
             steps {
-                dir('organization-service') {
+                dir("${DIR}") {
                     sh 'trivy fs .'
                 }
             }
@@ -66,7 +67,7 @@ pipeline {
 
         stage('Docker Build') {
             steps {
-                dir('organization-service') {
+                dir("${DIR}") {
                     sh "mvn spring-boot:build-image -DskipTests"
                 }
             }
@@ -74,7 +75,7 @@ pipeline {
 
         stage('Trivy Image Scan') {
             steps {
-                sh 'trivy image mohyehia99/organization-service:${BUILD_VERSION}'
+                sh 'trivy image ${DOCKER_IMAGE}:${BUILD_VERSION}'
             }
         }
 
@@ -82,7 +83,7 @@ pipeline {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'dockerHubUsername', passwordVariable: 'dockerHubPassword')]) {
                     sh "docker login -u ${env.dockerHubUsername} -p ${env.dockerHubPassword}"
-                    sh "docker push mohyehia99/organization-service:${BUILD_VERSION}"
+                    sh "docker push ${DOCKER_IMAGE}:${BUILD_VERSION}"
                 }
             }
         }
