@@ -67,67 +67,44 @@ services:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
 
-  jaeger:
-    container_name: jaeger-ctr
-    image: jaegertracing/all-in-one:latest
-    ports:
-      - '4318:4318'
-      - '16686:16686'
-    environment:
-      COLLECTOR_OTLP_ENABLED: "true"
-
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.10
-    container_name: elasticsearch
-    environment:
-      node.name: elasticsearch
-      discovery.type: single-node
-      bootstrap.memory_lock: "true"
-      ES_JAVA_OPTS: -Xms512m -Xmx512m
-      ELASTIC_USERNAME: elastic
-      ELASTIC_PASSWORD: P@ssw0rd
-      xpack.security.enabled: "true"
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:7.17.10
-    container_name: kibana
-    environment:
-      - ELASTICSEARCH_USERNAME=elastic
-      - ELASTICSEARCH_PASSWORD=P@ssw0rd
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    depends_on:
-      - elasticsearch
-    ports:
-      - "5601:5601"
-
-  filebeat:
-    image: docker.elastic.co/beats/filebeat:7.17.10
-    container_name: filebeat
-    entrypoint: "filebeat -e -strict.perms=false"
+  tempo:
+    image: grafana/tempo:latest
+    container_name: tempo
+    command: [ "-config.file=/etc/tempo.yml" ]
     volumes:
-      - ./docker/volumes/elastic/filebeat/filebeat.docker.yml:/usr/share/filebeat/filebeat.yml:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - /var/lib/docker/containers:/var/lib/docker/containers:ro
-      - ./docker/volumes/elastic/filebeat/data:/usr/share/filebeat.data:rw
-    user: root
-    depends_on:
-      - elasticsearch
+      - ./docker/volumes/tempo-config/tempo.yml:/etc/tempo.yml
+    ports:
+      - '3200:3200'   # tempo
+      - '9411:9411'  # zipkin
 
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    command:
+      - -config.file=/etc/loki/local-config.yaml
+    ports:
+      - '3100:3100'
+
+  promtail:
+    image: grafana/promtail:main
+    container_name: promtail
+    volumes:
+      - ./docker/volumes/promtail/promtail.yaml:/etc/promtail/docker-config.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/docker-config.yaml
+    restart: unless-stopped
 
   api-gateway:
-    image: mohyehia99/api-gateway:0.0.2
-    container_name: api-gateway-ctr
+    image: mohyehia99/api-gateway:0.0.3
+    container_name: api-gateway
     ports:
       - '8082:8082'
     depends_on:
-      - jaeger
+      - tempo
       - redis
     labels:
-      collect_logs_with_filebeat: "true"
+      collect_logs: "promtail"
     deploy:
       restart_policy:
         condition: on-failure
@@ -135,35 +112,40 @@ services:
     environment:
       ORGANIZATION_SERVICE_URI: http://organization-service:8081
       LICENSE_SERVICE_URI: http://licence-service:8083
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://tempo:9411/api/v2/spans
 
   licence-service:
-    image: mohyehia99/licence-service:0.0.2
-    container_name: licence-service-ctr
+    image: mohyehia99/licence-service:0.0.3
+    container_name: licence-service
     ports:
       - '8083:8083'
     depends_on:
-      - jaeger
+      - tempo
       - mongo-db
     labels:
-      collect_logs_with_filebeat: "true"
+      collect_logs: "promtail"
     deploy:
       restart_policy:
         condition: on-failure
         max_attempts: 3
     environment:
       ORGANIZATION_MS_API: http://organization-service:8081/api/v1/organizations/{organizationSlug}
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://tempo:9411/api/v2/spans
+      SPRING_APPLICATION_NAME: licence-service
 
   organization-service:
-    image: mohyehia99/organization-service:0.0.2
-    container_name: organization-service-ctr
+    image: mohyehia99/organization-service:0.0.3
+    container_name: organization-service
     ports:
       - '8081:8081'
     depends_on:
-      - jaeger
+      - tempo
       - postgres-db
     labels:
-      collect_logs_with_filebeat: "true"
+      collect_logs: "promtail"
     deploy:
       restart_policy:
         condition: on-failure
         max_attempts: 3
+    environment:
+      MANAGEMENT_ZIPKIN_TRACING_ENDPOINT: http://tempo:9411/api/v2/spans
