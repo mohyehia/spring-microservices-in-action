@@ -76,10 +76,6 @@ management:
       env: ${SERVICE_ENVIRONMENT:dev}
       region: ${SERVICE_REGION:us-east1}
 
-jaeger:
-  tracing:
-    url: http://jaeger:4318/v1/traces
-
 logging:
   level:
     root: info

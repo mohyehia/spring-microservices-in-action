@@ -13,3 +13,62 @@ datasources:
     editable: false
     jsonData:
       httpMethod: GET
+      exemplarTraceIdDestinations:
+        - name: trace_id
+          datasourceUid: tempo
+
+  - name: Loki
+    type: loki
+    uid: loki
+    access: proxy
+    orgId: 1
+    url: http://loki:3100
+    basicAuth: false
+    isDefault: false
+    version: 1
+    editable: true
+    jsonData:
+      maxLines: 50
+      derivedFields:
+        - dataSourceUid: tempo
+          matcherRegex: '.+ --- \[.+\] \[.+\] \[(\w*)-\w*\] .+'
+          name: traceId
+          url: $${__value.raw}
+
+  - name: Tempo
+    type: tempo
+    access: proxy
+    orgId: 1
+    url: http://tempo:3200
+    basicAuth: false
+    isDefault: true
+    version: 1
+    editable: true
+    apiVersion: 1
+    uid: tempo
+    jsonData:
+      httpMethod: GET
+      tracesToMetrics:
+        datasourceUid: prometheus
+        tags: [{ key: 'service.name', value: 'application' }, { key: 'method' }, { key: 'uri' }, { key: 'status' }, { key: 'exception' }]
+        queries:
+          - name: 'Throughput'
+            query: 'sum(rate(http_server_requests_seconds_count{$$__tags}[$$__rate_interval]))'
+          - name: 'Latency'
+            query: 'histogram_quantile(1.00, sum(rate(http_server_requests_seconds_bucket{$$__tags}[$$__rate_interval])) by (le))'
+        spanStartTimeShift: '-10m'
+        spanEndTimeShift: '10m'
+      tracesToLogs:
+        datasourceUid: loki
+        spanStartTimeShift: '-10m'
+        spanEndTimeShift: '10m'
+        filterByTraceID: true
+        filterBySpanID: true
+        mappedTags: [{ key: 'service.name', value: 'application' }]
+        mapTagNamesEnabled: true
+      lokiSearch:
+        datasourceUid: loki
+      serviceMap:
+        datasourceUid: prometheus
+      nodeGraph:
+        enabled: true
