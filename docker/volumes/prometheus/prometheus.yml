@@ -10,12 +10,12 @@ scrape_configs:
         labels:
           application: 'API Gateway'
 
-  - job_name: 'license-service'
+  - job_name: 'licence-service'
     metrics_path: /actuator/prometheus
     static_configs:
       - targets: ['host.docker.internal:8083']
         labels:
-          application: 'License Service'
+          application: 'Licence Service'
 
   - job_name: 'organization-service'
     metrics_path: /actuator/prometheus
