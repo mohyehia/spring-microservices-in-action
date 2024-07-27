@@ -67,7 +67,7 @@ pipeline {
 
         stage('Trivy Image Scan') {
             steps {
-                sh 'trivy image ${DOCKER_IMAGE}:${BUILD_VERSION}'
+                sh 'trivy image --severity HIGH,CRITICAL --exit-code 1 ${DOCKER_IMAGE}:${BUILD_VERSION}'
             }
         }
 
