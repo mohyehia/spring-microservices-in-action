@@ -46,6 +46,20 @@ spring:
                 redis-rate-limiter.burstCapacity: 20
                 redis-rate-limiter.requestedTokens: 1
 
+        - id: organization-service-docs
+          uri: ${ORGANIZATION_SERVICE_URI:http://organization-service}
+          predicates:
+            - Path=/aggregate/organization-service/v3/api-docs
+          filters:
+            - SetPath=/api-docs
+
+        - id: license-service-docs
+          uri: ${LICENSE_SERVICE_URI:http://license-service}
+          predicates:
+            - Path=/aggregate/licence-service/v3/api-docs
+          filters:
+            - SetPath=/api-docs
+
 server:
   port: 8082
   shutdown: graceful
@@ -82,3 +96,16 @@ logging:
     org.springframework.cloud.gateway: trace
   pattern:
     level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    urls:
+      - name: Organization Service
+        url: /aggregate/organization-service/v3/api-docs
+      - name: Licence Service
+        url: /aggregate/licence-service/v3/api-docs
+
+  api-docs:
+    enabled: true
+    path: /api-docs

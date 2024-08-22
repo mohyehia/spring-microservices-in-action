@@ -27,13 +27,8 @@ spec:
     metadata:
       labels:
         app: api-gateway
-        collect_logs_with_filebeat: "true"
-#        the below annotations in case of using the configuration file => temp.filebeats.yaml
-#      annotations:
-#        co.elastic.logs/enabled: "true"
-#        co.elastic.logs.json-logging/json.keys_under_root: "true"
-#        co.elastic.logs.json-logging/json.add_error_key: "true"
-#        co.elastic.logs.json-logging/json.message_key: "message"
+        collect_logs: "promtail"
+
     spec:
       containers:
         - name: api-gateway-ctr

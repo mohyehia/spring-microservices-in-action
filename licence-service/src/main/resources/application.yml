@@ -83,3 +83,11 @@ logging:
 organization:
   base:
     api: ${ORGANIZATION_MS_API:http://localhost:8081/api/v1/organizations/{organizationSlug}}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+  api-docs:
+    enabled: true
+    path: /api-docs
